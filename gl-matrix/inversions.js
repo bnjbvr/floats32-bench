@@ -73,7 +73,7 @@ function runReg() {
 }
 
 var title = 'Matrix inversions';
-var description = 'Do stuff';
+var description = 'Applies a big amount of times the following process: creates a random matrix, inverts it and then multiplies the initial matrix by the original, accumulating the precision loss.';
 function runBenchmark() {
     for(;;) {
         runReg();
