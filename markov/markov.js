@@ -1,14 +1,14 @@
 var print = print || function(x) { postMessage({type:'log', content:x}) }
 Math.fround = Math.fround || function(x){return x;};
 
-var WARMUPS = 3;
-var EPSILON = 1e-20;
-var TOTAL_ATTEMPTS = 1 / EPSILON;
+var WARMUPS = 2;
+var EPSILON = 1e-10;
+var TOTAL_ATTEMPTS = 100;
 
 var NUM_VECTORS, SIZE, vecf, random;
 var success = false;
 
-NUM_VECTORS = 100000000;
+NUM_VECTORS = 20000000;
 while (!success) {
     try {
         SIZE = NUM_VECTORS * 3;
@@ -22,7 +22,7 @@ while (!success) {
 }
 
 var title = "Markov Chains";
-var description = "Generates a random irreducible 3x3 matrix and then computes its steady state. Then multiplies this matrix by a set of N initial 3-vectors, where N is big enough accordingly to what your browser allows to allocate (N has been dynamically chosen to be " + NUM_VECTORS + "). Makes " + WARMUPS + " warm-up runs before showing results.";
+var description = "Generates a random irreducible 3x3 matrix and then computes its steady state. N initial states (3-vectors) are generated. Once the steady state is computed, each initial state is multiplied by the initial matrix 3 times, and then the steady state vector is compared with the obtained vector (which corresponds to the state after applying 3 moves). N is big enough accordingly to what your browser allows to allocate (N has been dynamically chosen to be " + NUM_VECTORS + "). Makes " + WARMUPS + " warm-up runs before showing results. Don't forget to use Firefox Nightly to see nice speedups!";
 
 var matrix = new Float32Array(9);
 
@@ -33,26 +33,42 @@ var difff = new Float32Array(9);
 var SIZE = NUM_VECTORS * 3;
 var vec3f = new Float32Array(3);
 
+function id(x) { return x }
+
 function mulvecf(out, a, b) {
     var f32 = Math.fround;
     var a00 = a[0], a01 = a[1], a02 = a[2],
         a10 = a[3], a11 = a[4], a12 = a[5],
         a20 = a[6], a21 = a[7], a22 = a[8],
 
-        x1 = b[0], x2 = b[1], x3 = b[2];
+        r1 = b[0], r2 = b[1], r3 = b[2];
 
-    out[0] = f32(f32(a00 * x1) + f32(a01 * x2)) + f32(a02 * x3);
-    out[1] = f32(f32(a10 * x1) + f32(a11 * x2)) + f32(a12 * x3);
-    out[2] = f32(f32(a20 * x1) + f32(a21 * x2)) + f32(a22 * x3);
+    r1 = f32(f32(f32(a00 * r1) + f32(a01 * r2)) + f32(a02 * r3));
+    r2 = f32(f32(f32(a10 * r1) + f32(a11 * r2)) + f32(a12 * r3));
+    r3 = f32(f32(f32(a20 * r1) + f32(a21 * r2)) + f32(a22 * r3));
+
+    r1 = f32(f32(f32(a00 * r1) + f32(a01 * r2)) + f32(a02 * r3));
+    r2 = f32(f32(f32(a10 * r1) + f32(a11 * r2)) + f32(a12 * r3));
+    r3 = f32(f32(f32(a20 * r1) + f32(a21 * r2)) + f32(a22 * r3));
+
+    r1 = f32(f32(f32(a00 * r1) + f32(a01 * r2)) + f32(a02 * r3));
+    r2 = f32(f32(f32(a10 * r1) + f32(a11 * r2)) + f32(a12 * r3));
+    r3 = f32(f32(f32(a20 * r1) + f32(a21 * r2)) + f32(a22 * r3));
+
+    out[0] = r1;
+    out[1] = r2;
+    out[2] = r3;
 }
 
 function markovFloat() {
+    var f32 = Math.fround;
     // Step 1: intf = matrix;
     for(var i = 0; i < 9; ++i) {
         intf[i] = matrix[i];
     }
     var prec = 0.99, attempts = TOTAL_ATTEMPTS;
     // Step 2: While precision is not reached, do steadyf = intf, intf *= matrix, prec = norm(steadfy - intf)
+    //
     while (prec > EPSILON && prec < 1 && attempts-- > 0) {
         // Step 2.1: steadyf = intf
         for(var i = 0; i < 9; ++i) steadyf[i] = intf[i];
@@ -66,31 +82,39 @@ function markovFloat() {
             b10 = matrix[3], b11 = matrix[4], b12 = matrix[5],
             b20 = matrix[6], b21 = matrix[7], b22 = matrix[8];
 
-        intf[0] = Math.fround(Math.fround(b00 * a00) + Math.fround(b01 * a10)) + Math.fround(b02 * a20);
-        intf[1] = Math.fround(Math.fround(b00 * a01) + Math.fround(b01 * a11)) + Math.fround(b02 * a21);
-        intf[2] = Math.fround(Math.fround(b00 * a02) + Math.fround(b01 * a12)) + Math.fround(b02 * a22);
+        intf[0] = f32(f32(b00 * a00) + f32(b01 * a10)) + f32(b02 * a20);
+        intf[1] = f32(f32(b00 * a01) + f32(b01 * a11)) + f32(b02 * a21);
+        intf[2] = f32(f32(b00 * a02) + f32(b01 * a12)) + f32(b02 * a22);
 
-        intf[3] = Math.fround(Math.fround(b10 * a00) + Math.fround(b11 * a10)) + Math.fround(b12 * a20);
-        intf[4] = Math.fround(Math.fround(b10 * a01) + Math.fround(b11 * a11)) + Math.fround(b12 * a21);
-        intf[5] = Math.fround(Math.fround(b10 * a02) + Math.fround(b11 * a12)) + Math.fround(b12 * a22);
+        intf[3] = f32(f32(b10 * a00) + f32(b11 * a10)) + f32(b12 * a20);
+        intf[4] = f32(f32(b10 * a01) + f32(b11 * a11)) + f32(b12 * a21);
+        intf[5] = f32(f32(b10 * a02) + f32(b11 * a12)) + f32(b12 * a22);
 
-        intf[6] = Math.fround(Math.fround(b20 * a00) + Math.fround(b21 * a10)) + Math.fround(b22 * a20);
-        intf[7] = Math.fround(Math.fround(b20 * a01) + Math.fround(b21 * a11)) + Math.fround(b22 * a21);
-        intf[8] = Math.fround(Math.fround(b20 * a02) + Math.fround(b21 * a12)) + Math.fround(b22 * a22);
+        intf[6] = f32(f32(b20 * a00) + f32(b21 * a10)) + f32(b22 * a20);
+        intf[7] = f32(f32(b20 * a01) + f32(b21 * a11)) + f32(b22 * a21);
+        intf[8] = f32(f32(b20 * a02) + f32(b21 * a12)) + f32(b22 * a22);
 
         // Step 2.3
-        prec = Math.fround(prec);
+        prec = f32(prec);
         for(var i = 0, prec = 0; i < 9; ++i) {
-            difff[i] = intf[i] - steadyf[i];
-            prec = Math.fround(prec + Math.fround(difff[i] * difff[i]));
+            var diff = f32(intf[i] - steadyf[i]);
+            prec = f32(prec + f32(diff * diff));
         }
-        prec = Math.fround(Math.sqrt(prec));
+        prec = f32(Math.sqrt(prec));
     }
 
     if (prec < 1) {
         for(var i = 0; i < NUM_VECTORS; i += 3) {
             vec3f[0] = vecf[i], vec3f[1] = vecf[i+1], vec3f[2] = vecf[i+2];
-            mulvecf(vec3f, intf, vec3f);
+            mulvecf(vec3f, matrix, vec3f);
+
+            prec = f32(0); // reusing prec
+            for(var j = 0; j < 3; ++j) {
+                var diff = f32(intf[j] - vec3f[j]);
+                prec = f32(prec + f32(diff * diff));
+            }
+            prec = f32(Math.sqrt(prec));
+            if (i >= NUM_VECTORS - 3) print('precision: ' + f32(prec));
         }
     }
 }
@@ -124,12 +148,23 @@ function mulvec(out, a, b) {
     var a00 = a[0], a01 = a[1], a02 = a[2],
         a10 = a[3], a11 = a[4], a12 = a[5],
         a20 = a[6], a21 = a[7], a22 = a[8],
+        r1 = b[0], r2 = b[1], r3 = b[2];
 
-        x1 = b[0], x2 = b[1], x3 = b[2];
+    r1 = a00 * r1 + a01 * r2 + a02 * r3;
+    r2 = a10 * r1 + a11 * r2 + a12 * r3;
+    r3 = a20 * r1 + a21 * r2 + a22 * r3;
 
-    out[0] = a00 * x1 + a01 * x2 + a02 * x3;
-    out[1] = a10 * x1 + a11 * x2 + a12 * x3;
-    out[2] = a20 * x1 + a21 * x2 + a22 * x3;
+    r1 = a00 * r1 + a01 * r2 + a02 * r3;
+    r2 = a10 * r1 + a11 * r2 + a12 * r3;
+    r3 = a20 * r1 + a21 * r2 + a22 * r3;
+
+    r1 = a00 * r1 + a01 * r2 + a02 * r3;
+    r2 = a10 * r1 + a11 * r2 + a12 * r3;
+    r3 = a20 * r1 + a21 * r2 + a22 * r3;
+
+    out[0] = r1;
+    out[1] = r2;
+    out[2] = r3;
 }
 
 function markovDouble() {
@@ -166,8 +201,8 @@ function markovDouble() {
 
         // Step 2.3
         for(var i = 0, prec = 0; i < 9; ++i) {
-            difff[i] = intf[i] - steadyf[i];
-            prec += difff[i] * difff[i];
+            var diff = intf[i] - steadyf[i];
+            prec += diff * diff;
         }
         prec = Math.sqrt(prec);
     }
@@ -175,7 +210,15 @@ function markovDouble() {
     if (prec < 1) {
         for(var i = 0; i < NUM_VECTORS; i += 3) {
             vec3f[0] = vecf[i], vec3f[1] = vecf[i+1], vec3f[2] = vecf[i+2];
-            mulvec(vec3f, intf, vec3f);
+            mulvec(vec3f, matrix, vec3f);
+
+            prec = 0; // reusing prec
+            for(var j = 0; j < 3; ++j) {
+                var diff = intf[j] - vec3f[j];
+                prec += diff * diff;
+            }
+            prec = Math.sqrt(prec);
+            if (i >= NUM_VECTORS - 3) print('precision: ' + prec);
         }
     }
 }
