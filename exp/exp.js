@@ -1,5 +1,5 @@
 var title = "Exponential";
-var description = "This benchmarks computes the exponential of several float values, using the approximation of Taylor series. This means it just applies additions and multiplications to some float values. The recent Ion optimizations for Float32 can enhance performance of such computations. Here is a page that shows you the difference: exp is the classic version without the usage of Float32 optimizations, expf is the one that uses all Float32 optimizations. The speedup is an indication of how faster the float exponential is: the higher, the better. If it's negative, there is something going wrong. Don't forget to use the latest Firefox Nightly!";
+var description = "This benchmark fills a big Float32Array with predictable values and then computes the exponential of each element by using the first elements of the exponential's power series. The main purpose of this benchmark is just to make additions and multiplications."
 UpdateInfos(title, description);
 
 var SIZE = 40000000;

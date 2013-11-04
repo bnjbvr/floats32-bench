@@ -4,8 +4,8 @@
  * matrix and accumulates the precision loss.
  */
 
-var TITLE = 'Matrix inversions';
-var DESCRIPTION = 'Applies a big amount of times the following process: creates a random matrix, inverts it and then multiplies the initial matrix by the original, accumulating the precision loss.';
+var TITLE = 'Matrix Inversions';
+var DESCRIPTION = "This benchmark creates a bunch of matrixes, inverts them and multiplies them back with the original, to be able to compare the precision loss when using Float32 or Float64. It uses an adapted version of gl-matrix."
 UpdateInfos(TITLE, DESCRIPTION);
 
 HasDependency('gl-matrix/glmatrix-f32.js')

@@ -1,5 +1,5 @@
 var title = "Fast Fourier Transform";
-var description = "Computes FFT several times, using github.com/corbanbrook/dsp.js";
+var description = "This benchmark creates a fake sample buffer and then applies several steps of Fast Fourier Transform. It also consists of basic operations and some calls to Math.sqrt. The FFT code is taken from an existing library, dsp.js.";
 UpdateInfos(title, description);
 
 Math.fround = Math.fround || function(x){return x;};

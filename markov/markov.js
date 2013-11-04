@@ -26,7 +26,7 @@ while (!success) {
 */
 
 var title = "Markov Chains";
-var description = "Generates a random irreducible 3x3 matrix and then computes its steady state. N initial states (3-vectors) are generated. Once the steady state is computed, each initial state is multiplied by the initial matrix 3 times, and then the steady state vector is compared with the obtained vector (which corresponds to the state after applying 3 moves). N is big enough accordingly to what your browser allows to allocate. Don't forget to use Firefox Nightly to see nice speedups!";
+var description = "This benchmark creates a random irreducible 3x3 transition matrix and then computes its steady-state matrix (see also the article on Wikipedia). Then, N initial states are generated and multiplied 3 times with the initial matrix, so as to finally compare the resulting state (after 3 steps) to the steady state."
 UpdateInfos(title, description);
 
 var matrix = new Float32Array(9);

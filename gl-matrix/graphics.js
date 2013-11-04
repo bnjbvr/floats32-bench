@@ -4,8 +4,8 @@
  * results.
  */
 
-var TITLE = 'Matrix graphics';
-var DESCRIPTION = 'Applies some matrix operations that could represent typical graphical operations.';
+var TITLE = 'Matrix Graphics';
+var DESCRIPTION = "This benchmarks creates a bunch of matrixes and applies them some operations that are frequently used in graphics: translation, rotation, scaling, etc. This one uses a lot of basic operations and more complex operations (like calls to Math.cos and Math.sin for the rotation). Thus, it shows great improvements when the Float32 equivalent forms of these functions are faster. Once more, it uses the adapted version of gl-matrix";
 UpdateInfos(TITLE, DESCRIPTION);
 
 HasDependency('gl-matrix/glmatrix-f32.js')
