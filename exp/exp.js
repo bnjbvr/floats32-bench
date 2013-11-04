@@ -1,7 +1,9 @@
-var print = print || function(x) { postMessage({type:'log', content:x}) }
-
 var title = "Exponential";
 var description = "This benchmarks computes the exponential of several float values, using the approximation of Taylor series. This means it just applies additions and multiplications to some float values. The recent Ion optimizations for Float32 can enhance performance of such computations. Here is a page that shows you the difference: exp is the classic version without the usage of Float32 optimizations, expf is the one that uses all Float32 optimizations. The speedup is an indication of how faster the float exponential is: the higher, the better. If it's negative, there is something going wrong. Don't forget to use the latest Firefox Nightly!";
+UpdateInfos(title, description);
+
+var SIZE = 40000000;
+var f32 = new Float32Array(SIZE);
 
 // Benchmark
 Math.fround = Math.fround || function(x){return x;};
@@ -39,30 +41,22 @@ function makeDate() {
     return +new Date();
 }
 
-var SIZE = 80000000;
-var f32 = new Float32Array(SIZE);
-
 function computeExpf() {
     for(var i = 0; i < SIZE; ++i)
         f32[i] = (i % 100) / 100.;
 
-    print("expf - start test");
     var before = makeDate();
     for(var i = 0, s = SIZE; i < s; ++i) {
         f32[i] = expf(f32[i]);
     }
-    print('expf - end of test');
     return makeDate() - before;
 }
 
 function runTestExpf() {
     var diff = computeExpf();
-    postMessage({
-        type: 'result',
-        content: {
-            which: 'with',
-            value: diff
-        }
+    SendResult({
+        which: 'with',
+        value: diff
     });
 }
 
@@ -70,39 +64,24 @@ function computeExp() {
     for(var i = 0; i < SIZE; ++i)
         f32[i] = (i % 100) / 100.;
 
-    print("exp - start test");
     var before = makeDate();
     for(var i = 0, s = SIZE; i < s; ++i) {
         f32[i] = exp(f32[i]);
     }
-    print('exp - end of test');
     return makeDate() - before;
 }
 
 function runTestExp() {
     var diff = computeExp();
-    postMessage({
-        type: 'result',
-        content: {
-            which: 'without',
-            value: diff
-        }
+    SendResult({
+        which: 'without',
+        value: diff
     });
 }
 
 function runBenchmark() {
-    for (;;) {
+    for (var n = 3; n; --n) {
         runTestExp();
         runTestExpf();
-    }
-}
-
-if (typeof onmessage !== 'undefined') {
-    onmessage = function(x) {
-        postMessage({type: 'info', content: {
-            title: title,
-            description: description
-        }});
-        runBenchmark();
     }
 }

@@ -1,14 +1,17 @@
-var print = print || function(x) { postMessage({type:'log', content:x}) }
 Math.fround = Math.fround || function(x){return x;};
 
-var WARMUPS = 2;
 var EPSILON = 1e-10;
 var TOTAL_ATTEMPTS = 100;
 
 var NUM_VECTORS, SIZE, vecf, random;
 var success = false;
 
-NUM_VECTORS = 20000000;
+var NUM_VECTORS = 5000000,
+    SIZE = NUM_VECTORS * 3,
+    vecf = new Float32Array(SIZE),
+    random = new Float32Array(SIZE);
+
+/*
 while (!success) {
     try {
         SIZE = NUM_VECTORS * 3;
@@ -20,9 +23,11 @@ while (!success) {
         success = false;
     }
 }
+*/
 
 var title = "Markov Chains";
-var description = "Generates a random irreducible 3x3 matrix and then computes its steady state. N initial states (3-vectors) are generated. Once the steady state is computed, each initial state is multiplied by the initial matrix 3 times, and then the steady state vector is compared with the obtained vector (which corresponds to the state after applying 3 moves). N is big enough accordingly to what your browser allows to allocate (N has been dynamically chosen to be " + NUM_VECTORS + "). Makes " + WARMUPS + " warm-up runs before showing results. Don't forget to use Firefox Nightly to see nice speedups!";
+var description = "Generates a random irreducible 3x3 matrix and then computes its steady state. N initial states (3-vectors) are generated. Once the steady state is computed, each initial state is multiplied by the initial matrix 3 times, and then the steady state vector is compared with the obtained vector (which corresponds to the state after applying 3 moves). N is big enough accordingly to what your browser allows to allocate. Don't forget to use Firefox Nightly to see nice speedups!";
+UpdateInfos(title, description);
 
 var matrix = new Float32Array(9);
 
@@ -30,7 +35,6 @@ var intf = new Float32Array(9);
 var steadyf = new Float32Array(9);
 var difff = new Float32Array(9);
 
-var SIZE = NUM_VECTORS * 3;
 var vec3f = new Float32Array(3);
 
 function id(x) { return x }
@@ -132,15 +136,9 @@ function computeWith() {
 
 function runTestWith() {
     var diff = computeWith();
-    if(run < WARMUPS)
-        return;
-
-    postMessage({
-        type: 'result',
-        content: {
-            which: 'with',
-            value: diff
-        }
+    SendResult({
+        which: 'with',
+        value: diff
     });
 };
 
@@ -231,26 +229,18 @@ function computeWithout() {
 
 function runTestWithout() {
     var diff = computeWithout();
-    if(run < WARMUPS)
-        return;
-
-    postMessage({
-        type: 'result',
-        content: {
-            which: 'without',
-            value: diff
-        }
+    SendResult({
+        which: 'without',
+        value: diff
     });
 };
 
-var run = 0;
 function runBenchmark() {
-
     for(var i = 0; i < SIZE; ++i)
         random[i] = Math.random();
     var last = 0;
 
-    for (;;) {
+    for (var n = 3; n; --n) {
         var sum = 0;
         for(var i = 0; i < 9; ++i)
             sum += matrix[i] = random[last = ((last + 1)%SIZE)];
@@ -261,18 +251,6 @@ function runBenchmark() {
 
         runTestWithout();
         runTestWith();
-        run += 1;
     }
 }
-
-if (typeof onmessage !== 'undefined') {
-    onmessage = function(x) {
-        postMessage({type: 'info', content: {
-            title: title,
-            description: description
-        }});
-        runBenchmark();
-    }
-}
-
 

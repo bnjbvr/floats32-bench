@@ -4,19 +4,23 @@
  * matrix and accumulates the precision loss.
  */
 
-var print = print || function(x) { postMessage({type:'log', content:x}) }
-var load = load || function(x) { importScripts('../' + x) };
-load('gl-matrix/glmatrix-reg.js');
-load('gl-matrix/glmatrix-f32.js');
+var TITLE = 'Matrix inversions';
+var DESCRIPTION = 'Applies a big amount of times the following process: creates a random matrix, inverts it and then multiplies the initial matrix by the original, accumulating the precision loss.';
+UpdateInfos(TITLE, DESCRIPTION);
 
-var ITERATIONS = 200000;
+HasDependency('gl-matrix/glmatrix-f32.js')
+HasDependency('gl-matrix/glmatrix-reg.js')
+
+// Possible iterations values
+var ITERATIONS = 20000;
 var INVERSIONS = 100;
 
+function makeDate() { return +new Date() }
+
+// Float32 version
 var out32 = f32mat3.create();
 var inv32 = f32mat3.create();
 var identity32 = f32mat3.create();
-
-function makeDate() { return +new Date() }
 
 function benchmark32() {
     var now = 0, before = 0;
@@ -37,12 +41,13 @@ function benchmark32() {
 
 function runFloat32() {
     var diff = benchmark32();
-    postMessage({
-        type: 'result',
-        content: {which:'with', value: diff}
+    SendResult({
+        which:'with',
+        value: diff
     });
 }
 
+// Float64 version
 var outreg = mat3.create();
 var invreg = mat3.create();
 var identityreg = mat3.create();
@@ -66,27 +71,18 @@ function benchmarkreg() {
 
 function runReg() {
     var diff = benchmarkreg();
-    postMessage({
-        type: 'result',
-        content: {which: 'without', value: diff}
+    SendResult({
+        which: 'without',
+        value: diff
     });
 }
 
-var title = 'Matrix inversions';
-var description = 'Applies a big amount of times the following process: creates a random matrix, inverts it and then multiplies the initial matrix by the original, accumulating the precision loss.';
+// Run benchmark
 function runBenchmark() {
-    for(;;) {
+    for(var i = 3; i--;) {
         runReg();
         runFloat32();
     }
-}
+};
 
-if (typeof onmessage !== 'undefined') {
-    onmessage = function(x) {
-        postMessage({type: 'info', content: {
-            title: title,
-            description: description
-        }});
-        runBenchmark();
-    }
-}
+

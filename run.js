@@ -1,23 +1,20 @@
-var log = print;
-var print = function(x) { postMessage({type:'log', content: x}); };
-
-var postMessage = function(data) {
-    if (data.type === 'log')
-        log('log - ' + data.content);
-    else if (data.type === 'result')
-        log('result: ' + data.content.which + ' - ' + data.content.value + 'ms');
+function HasDependency(name) {
+    load(name);
 }
 
-var results = {
-    exp: [],
-    expf: []
+function SendResult (what) {
+    print(what.which, ' - ', what.value, 'ms');
+}
+
+function UpdateInfos(title, description) {
+    print(title);
+    print(description);
 }
 
 function run(filename) {
     load(filename);
-    if (typeof description !== 'undefined')
-        log(description);
-    runBenchmark();
+    for(;;)
+        runBenchmark();
 }
 
 var arg = scriptArgs[0];
