@@ -24,7 +24,7 @@ var identity32 = f32mat3.create();
 
 function benchmark32() {
     var now = 0, before = 0;
-    print('float32 - start');
+    log('float32 - start');
     before = makeDate();
     for (var n = ITERATIONS; n; --n) {
         out32 = f32mat3.random(out32)
@@ -35,7 +35,7 @@ function benchmark32() {
         }
     }
     now += makeDate() - before;
-    print('float32 - end');
+    log('float32 - end');
     return now;
 }
 
@@ -54,7 +54,7 @@ var identityreg = mat3.create();
 
 function benchmarkreg() {
     var now = 0, before = 0;
-    print('regular - start');
+    log('regular - start');
     before = makeDate();
     for (var n = ITERATIONS; n; --n) {
         outreg = mat3.random(outreg);
@@ -65,7 +65,7 @@ function benchmarkreg() {
         }
     }
     now += makeDate() - before;
-    print('regular - end');
+    log('regular - end');
     return now;
 }
 

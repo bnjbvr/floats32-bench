@@ -3,12 +3,12 @@ function HasDependency(name) {
 }
 
 function SendResult (what) {
-    print(what.which, ' - ', what.value, 'ms');
+    log(what.which, ' - ', what.value, 'ms');
 }
 
 function UpdateInfos(title, description) {
-    print(title);
-    print(description);
+    log(title);
+    log(description);
 }
 
 function run(filename) {
@@ -19,7 +19,7 @@ function run(filename) {
 
 var arg = scriptArgs[0];
 if (typeof arg === 'undefined')
-    print('Missing argument: filename');
+    log('Missing argument: filename');
 else
     run(arg);
 

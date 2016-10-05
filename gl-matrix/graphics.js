@@ -42,7 +42,7 @@ function makeDate() { return +new Date() }
 
 function benchmark32() {
     var now = 0, before = 0;
-    print('float32 - start');
+    log('float32 - start');
     before = makeDate();
     for (var n = ITERATIONS; n; --n) {
         generateNextMatrix(out32);
@@ -55,7 +55,7 @@ function benchmark32() {
         }
     }
     now = makeDate() - before;
-    print('float32 - end');
+    log('float32 - end');
     return now;
 }
 
@@ -75,7 +75,7 @@ var vtrans = new Float32Array([13.37, -4.2]);
 
 function benchmarkreg() {
     var now = 0, before = 0;
-    print('regular - start');
+    log('regular - start');
     before = makeDate();
     for (var n = ITERATIONS; n; --n) {
         generateNextMatrix(out32);
@@ -88,7 +88,7 @@ function benchmarkreg() {
         }
     }
     now = makeDate() - before;
-    print('regular - end');
+    log('regular - end');
     return now;
 }
 

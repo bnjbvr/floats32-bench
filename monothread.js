@@ -72,5 +72,6 @@ $('discard').onclick = function() {
     domLog.innerHTML = '';
 }
 
-var print = print || Log;
+var log = typeof window !== 'undefined' ? Log
+                                        : console.log.bind(console);
 

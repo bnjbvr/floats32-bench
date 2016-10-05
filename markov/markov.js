@@ -118,7 +118,7 @@ function markovFloat() {
                 prec = f32(prec + f32(diff * diff));
             }
             prec = f32(Math.sqrt(prec));
-            if (i >= NUM_VECTORS - 3) print('precision: ' + f32(prec));
+            if (i >= NUM_VECTORS - 3) log('precision: ' + f32(prec));
         }
     }
 }
@@ -216,7 +216,7 @@ function markovDouble() {
                 prec += diff * diff;
             }
             prec = Math.sqrt(prec);
-            if (i >= NUM_VECTORS - 3) print('precision: ' + prec);
+            if (i >= NUM_VECTORS - 3) log('precision: ' + prec);
         }
     }
 }
